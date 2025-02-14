@@ -19,15 +19,17 @@ IMEmap := Map(
     "en", 67699721
 )
 
-; ^Esc 开始菜单弹窗等情况会找不到当前窗口
-hasIME(WinTitle := "A") {
-    try {
-        hWnd := WinGetID(WinTitle)
-        return 1
-    } catch Error {
-        return 0
-    }
-}
+; 下面的代码没有起到作用，所以注释掉了
+; 改为用CapsLock映射中的try-catch
+; ; ^Esc 开始菜单弹窗等情况会找不到当前窗口
+; hasIME(WinTitle := "A") {
+;     try {
+;         hWnd := WinGetID(WinTitle)
+;         return 1
+;     } catch Error {
+;         return 0
+;     }
+; }
 
 ; 获取当前激活窗口所使用的IME的ID
 getCurrentIMEID() {
@@ -98,22 +100,30 @@ CapsLock::
 {
     if (KeyWait("CapsLock", "T0.5")) { ; 等待 CapsLock键抬起，最长等待0.5秒
         ; 短按时切换到对应输入法的非英文模式
-        if (hasIME()) { ; 当没有输入法时就不起作用
-            if (getCurrentIMEID() == IMEmap["zh"]) {
+        if (getCurrentIMEID() == IMEmap["zh"]) {
+            try {
                 switchIMEbyID(IMEmap["jp"])
-                ; conResult1 := IME_SetConvMode(25)
                 Sleep(100) ; 不设置延时的话按键不起效
-                Send "{LCtrl down}{CapsLock down}{CapsLock up}{LCtrl up}"
-                return
+                Send "{LCtrl down}{CapsLock down}{CapsLock up}{LCtrl up}" ; 切到平假名输入
+            } catch Error {
+                Send "{Alt down}{LShift down}{LShift up}{Alt up}" ; API不行就通过快捷键切换
+                Sleep(100) ; 不设置延时的话按键不起效
+                Send "{LCtrl down}{CapsLock down}{CapsLock up}{LCtrl up}" ; 切到平假名输入
             }
-            else if (getCurrentIMEID() == IMEmap["jp"]) {
+        }
+        else if (getCurrentIMEID() == IMEmap["jp"]) {
+            try {
                 switchIMEbyID(IMEmap["zh"])
-                ; conResult1 := IME_SetConvMode(1025)
                 Sleep(100) ; 不设置延时的话按键不起效
                 if (cnIsEnglishMode()) {
-                    Send "{LShift}"
+                    Send "{LShift}" ; 切到中文输入
                 }
-                return
+            } catch Error {
+                Send "{Alt down}{LShift down}{LShift up}{Alt up}" ; API不行就通过快捷键切换
+                Sleep(100) ; 不设置延时的话按键不起效
+                if (cnIsEnglishMode()) {
+                    Send "{LShift}" ; 切到中文输入
+                }
             }
         }
     } else {
