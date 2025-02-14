@@ -106,7 +106,8 @@ CapsLock::
                 Sleep(100) ; 不设置延时的话按键不起效
                 Send "{LCtrl down}{CapsLock down}{CapsLock up}{LCtrl up}" ; 切到平假名输入
             } catch Error {
-                Send "{Alt down}{LShift down}{LShift up}{Alt up}" ; API不行就通过快捷键切换
+                ; Send "{Alt down}{LShift down}{LShift up}{Alt up}" ; API不行就通过快捷键切换，日语模式在开始菜单下这组快捷键不好用
+                Send "{LWin down}{Space down}{Space Up}{Space down}{Space Up}{LWin up}" ; API不行就通过快捷键切换
                 Sleep(100) ; 不设置延时的话按键不起效
                 Send "{LCtrl down}{CapsLock down}{CapsLock up}{LCtrl up}" ; 切到平假名输入
             }
@@ -119,7 +120,8 @@ CapsLock::
                     Send "{LShift}" ; 切到中文输入
                 }
             } catch Error {
-                Send "{Alt down}{LShift down}{LShift up}{Alt up}" ; API不行就通过快捷键切换
+                ; Send "{Alt down}{LShift down}{LShift up}{Alt up}" ; API不行就通过快捷键切换，日语模式在开始菜单下这组快捷键不好用
+                Send "{LWin down}{Space down}{Space Up}{Space down}{Space Up}{LWin up}" ; 
                 Sleep(100) ; 不设置延时的话按键不起效
                 if (cnIsEnglishMode()) {
                     Send "{LShift}" ; 切到中文输入
