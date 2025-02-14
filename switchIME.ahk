@@ -106,25 +106,23 @@ CapsLock::
                 Sleep(100) ; 不设置延时的话按键不起效
                 Send "{LCtrl down}{CapsLock down}{CapsLock up}{LCtrl up}" ; 切到平假名输入
             } catch Error {
-                ; Send "{Alt down}{LShift down}{LShift up}{Alt up}" ; API不行就通过快捷键切换，日语模式在开始菜单下这组快捷键不好用
                 Send "{LWin down}{Space down}{Space Up}{Space down}{Space Up}{LWin up}" ; API不行就通过快捷键切换
-                Sleep(100) ; 不设置延时的话按键不起效
-                Send "{LCtrl down}{CapsLock down}{CapsLock up}{LCtrl up}" ; 切到平假名输入
+                Sleep(100)
+                Send "{LCtrl down}{CapsLock down}{CapsLock up}{LCtrl up}"
             }
         }
         else if (getCurrentIMEID() == IMEmap["jp"]) {
             try {
                 switchIMEbyID(IMEmap["zh"])
-                Sleep(100) ; 不设置延时的话按键不起效
+                Sleep(100)
                 if (cnIsEnglishMode()) {
                     Send "{LShift}" ; 切到中文输入
                 }
             } catch Error {
-                ; Send "{Alt down}{LShift down}{LShift up}{Alt up}" ; API不行就通过快捷键切换，日语模式在开始菜单下这组快捷键不好用
-                Send "{LWin down}{Space down}{Space Up}{Space down}{Space Up}{LWin up}" ; 
-                Sleep(100) ; 不设置延时的话按键不起效
+                Send "{LWin down}{Space down}{Space Up}{Space down}{Space Up}{LWin up}" ; shift也有映射的缘故，日语模式下Alt+Shift有时会出现问题
+                Sleep(100)
                 if (cnIsEnglishMode()) {
-                    Send "{LShift}" ; 切到中文输入
+                    Send "{LShift}"
                 }
             }
         }
