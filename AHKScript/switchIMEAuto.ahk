@@ -2,7 +2,7 @@
 ; Persistent
 
 ; 设置窗口标题匹配模式，2为默认模式
-SetTitleMatchMode 2
+; SetTitleMatchMode 2
 
 ; 设置脚本是否可以 "看见" 隐藏的窗口
 DetectHiddenWindows True
@@ -19,15 +19,22 @@ IMEmap := Map(
     "en", 67699721
 )
 
-; ^Esc 开始菜单弹窗等情况会找不到当前窗口
-hasIME(WinTitle := "A") {
-    try {
-        hWnd := WinGetID(WinTitle)
-        return 1
-    } catch Error {
-        return 0
-    }
-}
+; 不支持PostMessage切换输入法的窗口标题列表
+unsupportMap := Map(
+    "Amazon Music", 1
+)
+
+; 下面的代码没有起到作用，所以注释掉了
+; 改为用CapsLock映射中的try-catch
+; ; ^Esc 开始菜单弹窗等情况会找不到当前窗口
+; hasIME(WinTitle := "A") {
+;     try {
+;         hWnd := WinGetID(WinTitle)
+;         return 1
+;     } catch Error {
+;         return 0
+;     }
+; }
 
 ; 获取当前激活窗口所使用的IME的ID
 getCurrentIMEID() {
@@ -40,7 +47,10 @@ getCurrentIMEID() {
 ; 使用IMEID激活对应的输入法
 switchIMEbyID(IMEID) {
     winTitle := WinGetTitle("A")
-    PostMessage(0x50, 0, IMEID, , WinTitle)
+    if (unsupportMap.Has(winTitle)) {
+        throw(Error())
+    }
+    PostMessage(0x50, 0, IMEID, , winTitle)
 }
 
 ; 用于判断微软拼音是否是英文模式
@@ -98,22 +108,30 @@ CapsLock::
 {
     if (KeyWait("CapsLock", "T0.5")) { ; 等待 CapsLock键抬起，最长等待0.5秒
         ; 短按时切换到对应输入法的非英文模式
-        if (hasIME()) { ; 当没有输入法时就不起作用
-            if (getCurrentIMEID() == IMEmap["zh"]) {
+        if (getCurrentIMEID() == IMEmap["zh"]) {
+            try {
                 switchIMEbyID(IMEmap["jp"])
-                ; conResult1 := IME_SetConvMode(25)
                 Sleep(100) ; 不设置延时的话按键不起效
+                Send "{LCtrl down}{CapsLock down}{CapsLock up}{LCtrl up}" ; 切到平假名输入
+            } catch Error {
+                Send "{LWin down}{Space down}{Space Up}{Space down}{Space Up}{LWin up}" ; API不行就通过快捷键切换
+                Sleep(100)
                 Send "{LCtrl down}{CapsLock down}{CapsLock up}{LCtrl up}"
-                return
             }
-            else if (getCurrentIMEID() == IMEmap["jp"]) {
+        }
+        else if (getCurrentIMEID() == IMEmap["jp"]) {
+            try {
                 switchIMEbyID(IMEmap["zh"])
-                ; conResult1 := IME_SetConvMode(1025)
-                Sleep(100) ; 不设置延时的话按键不起效
+                Sleep(100)
+                if (cnIsEnglishMode()) {
+                    Send "{LShift}" ; 切到中文输入
+                }
+            } catch Error {
+                Send "{LWin down}{Space down}{Space Up}{Space down}{Space Up}{LWin up}" ; shift也有映射的缘故，日语模式下Alt+Shift有时会出现问题
+                Sleep(100)
                 if (cnIsEnglishMode()) {
                     Send "{LShift}"
                 }
-                return
             }
         }
     } else {
