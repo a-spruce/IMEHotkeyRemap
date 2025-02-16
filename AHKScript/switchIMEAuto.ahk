@@ -24,6 +24,10 @@ unsupportMap := Map(
     "Amazon Music", 1
 )
 
+; 设置按键阈值，如果觉得按键反应不灵敏可以适当调大
+CapsLockThreshold := 0.5 ; CapsLock键阈值
+LShiftThreshold := 0.12 ; LShift键阈值
+
 ; 下面的代码没有起到作用，所以注释掉了
 ; 改为用CapsLock映射中的try-catch
 ; ; ^Esc 开始菜单弹窗等情况会找不到当前窗口
@@ -106,7 +110,7 @@ ToggleCapsLock() {
 
 CapsLock::
 {
-    if (KeyWait("CapsLock", "T0.5")) { ; 等待 CapsLock键抬起，最长等待0.5秒
+    if (KeyWait("CapsLock", CapsLockThreshold)) { ; 等待 CapsLock键抬起，最长等待0.5秒
         ; 短按时切换到对应输入法的非英文模式
         if (getCurrentIMEID() == IMEmap["zh"]) {
             try {
@@ -143,7 +147,7 @@ CapsLock::
 
 ~LShift::
 {
-    if (KeyWait("LShift", "T0.12") && getCurrentIMEID() == IMEmap["jp"]) {
+    if (KeyWait("LShift", LShiftThreshold) && getCurrentIMEID() == IMEmap["jp"]) {
         Send "{vkF3sc029}"
     }
     ; 其它情况就是默认，不需要写
