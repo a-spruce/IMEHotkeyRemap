@@ -8,6 +8,8 @@ Windows和Mac上的中英日输入法切换用起来不太顺手，于是用AHK�
 
 需要注意：在中文模式下，不管当前是英文还是中文输入，按Capslock都会切到日文平假名输入，反之亦然。（在我眼里这解决了Windows上很恼人的问题）
 
+**一句话概括：** 需要换语言，按CapsLock；需要输字母，按左Shift（再按切回来）
+
 切换逻辑示意图：
 ```text
                                         |--------English
@@ -55,6 +57,8 @@ Being tried of switching IMEs (EN-JP-ZH) with original hotkeys on both Windows a
 The remapped hotkey is intuitive for me: there are two input modes, ZH and JP, press CapsLock to toggle between the two modes, press LShift to toggle between ZH/JP and English.
 
 **Whenever** you press CapsLock in ZH mode, it will switch to the Hiragana mode of JP, vice versa. (which I think solved an annoying problem on Windows.)
+
+**In one word:** CapsLock if ZH⇔JP, LShift if ZH/JP⇔EN
 
 The logic of switching is show as bellow:
 
