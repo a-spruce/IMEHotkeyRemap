@@ -19,6 +19,11 @@ IMEmap := Map(
     "en", 67699721
 )
 
+; 不支持PostMessage切换输入法的窗口标题列表
+unsupportMap := Map(
+    "Amazon Music", 1
+)
+
 ; 下面的代码没有起到作用，所以注释掉了
 ; 改为用CapsLock映射中的try-catch
 ; ; ^Esc 开始菜单弹窗等情况会找不到当前窗口
@@ -42,7 +47,10 @@ getCurrentIMEID() {
 ; 使用IMEID激活对应的输入法
 switchIMEbyID(IMEID) {
     winTitle := WinGetTitle("A")
-    PostMessage(0x50, 0, IMEID, , WinTitle)
+    if (unsupportMap.Has(winTitle)) {
+        throw(Error())
+    }
+    PostMessage(0x50, 0, IMEID, , winTitle)
 }
 
 ; 用于判断微软拼音是否是英文模式
